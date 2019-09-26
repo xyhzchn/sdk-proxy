@@ -1,0 +1,61 @@
+1.测试需要依赖fidder这个工具
+
+
+
+2.这边提供一个接口，各个sdk的工具需要实现这个接口
+
+
+package com.cn.ceshi.service;
+import com.lamfire.json.JSON;
+/**
+ * Created by wangly on 2017/8/30.
+ */
+public interface UniformService {
+    /**
+     *  参数解密
+     * @param hostAndURL   域名或者完整的url
+     * @param aseBody      待解密字符串
+     * @param needKey      可能需要的解密参数
+     * @return
+     */
+    JSON inDecode(String hostAndURL, String aseBody,JSON needKey);
+    /**
+     *返回值 解密
+     * @param hostAndURL 域名或者完整的url
+     * @param backData   待解密字符串
+     * @param needKey    可能需要的解密参数
+     * @return
+     */
+    String outDecode(String hostAndURL, String backData,JSON needKey);
+}
+
+eg:
+package com.cn.ceshi.util.didiking;
+public class DidiKingUniformServiceImpl implements UniformService{}
+
+3.各个sdk提供jar包【1个DecodeMapUtil和1个或多个UniformServiceImpl】
+
+  3.1.jar包含以上类【DidiKingUniformServiceImpl】
+  (可包含多个加解密的类) === com.cn.ceshi.util.[sdk区分包名].DidiKingUniformServiceImpl
+  3.2.jar包含工具类【DecodeMapUtil】
+
+  eg：
+
+  public class DecodeMapUtil {
+
+    private static final UniformService uniformService = new DidiKingUniformServiceImpl();
+
+    public static Map<String, UniformService> getDecodeMap() {
+
+        Map<String, UniformService> tempTestMap = new HashMap<String, UniformService>();
+
+        tempTestMap.put("p.ddking.mob.com", uniformService);
+        tempTestMap.put("api.ddking.mob.com", uniformService);
+
+        return tempTestMap;
+    }
+}
+
+
+
+

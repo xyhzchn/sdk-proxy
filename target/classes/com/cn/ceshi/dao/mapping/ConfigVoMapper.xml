@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cn.ceshi.dao.ConfigVoMapper">
+
+    <resultMap id="BaseResultMap" type="com.cn.ceshi.model.ConfigVo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="req_open" property="reqOpen" jdbcType="TINYINT"/>
+        <result column="req_params" property="reqParams" jdbcType="BLOB"/>
+        <result column="resp_open" property="respOpen" jdbcType="TINYINT"/>
+        <result column="resp_params" property="respParams" jdbcType="BLOB"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+            id,url, req_open, req_params,resp_open, resp_params
+        </sql>
+
+
+    <select id="getByUrl" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from config2
+        where url = #{url,jdbcType=VARCHAR}
+    </select>
+
+
+    <insert id="insert" parameterType="com.cn.ceshi.model.ConfigVo" useGeneratedKeys="true" keyProperty="id">
+        insert into config2
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="url != null">
+                url,
+            </if>
+            <if test="req_open != null">
+                req_open,
+            </if>
+            <if test="req_params != null">
+                `req_params`,
+            </if>
+            <if test="resp_open != null">
+                resp_open,
+            </if>
+            <if test="resp_params != null">
+                `resp_params`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="req_open != null">
+                #{reqOpen,jdbcType=TINYINT},
+            </if>
+            <if test="req_params != null">
+                #{reqParams,jdbcType=BLOB},
+            </if>
+            <if test="resp_open != null">
+                #{respOpen,jdbcType=TINYINT},
+            </if>
+            <if test="respParams != null">
+                #{respParams,jdbcType=BLOB},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="save" parameterType="com.cn.ceshi.model.ConfigVo">
+        INSERT INTO `config2` ( `url`, `req_open`, `req_params`,`resp_open`, `resp_params`)
+        values (
+           #{url,jdbcType=VARCHAR},
+           #{reqOpen,jdbcType=TINYINT},
+           #{reqParams,jdbcType=BLOB},
+           #{respOpen,jdbcType=TINYINT},
+           #{respParams,jdbcType=BLOB}
+        )
+    </insert>
+
+    <update id="updateByUrl" parameterType="com.cn.ceshi.model.ConfigVo">
+        update config2
+        <set>
+            <if test="reqOpen != null">
+                req_open = #{reqOpen,jdbcType=TINYINT},
+            </if>
+            <if test="reqParams != null">
+                req_params=#{reqParams,jdbcType=BLOB},
+            </if>
+            <if test="respOpen != null">
+                resp_open= #{respOpen,jdbcType=TINYINT},
+            </if>
+            <if test="respParams != null">
+                resp_params=#{respParams,jdbcType=BLOB},
+            </if>
+        </set>
+        where url = #{url,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="list" parameterType="com.cn.ceshi.model.ConfigVo"
+            resultMap="BaseResultMap" useCache="false" flushCache="true">
+        select
+        <include refid="Base_Column_List"/>
+        from `config2`
+        <where>
+            <if test="url != null">
+                and url = #{url,jdbcType=BLOB}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="count" resultType="long">
+        select  count(1) from `config2`
+    </select>
+
+
+    <update id="updateRespparams">
+        update config2 set resp_params=#{respParams,jdbcType=BLOB} where url = #{url,jdbcType=VARCHAR}
+    </update>
+</mapper>

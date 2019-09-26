@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<parameter>
+    <!--唤醒相关参数配置-->
+    <awaken>
+        <!--唤醒测试环境访问地址-->
+        <param name="awaken_test_url" value="10.21.141.54:8699"/>
+        <!--唤醒独立包线上访问地址-->
+        <param name="awaken_single_online_host" value="api.aw.smarttel.cn"/>
+        <!--唤醒公共库线上访问地址-->
+        <param name="awaken_common_online_host" value="aw.mic.mob.com"/>
+    </awaken>
+    <!--动态库相关参数配置-->
+    <dyn>
+        <!--动态库线上访问地址-->
+        <param name="dyn_common_online_host" value="df.mic.mob.com"/>
+
+    </dyn>
+    <!--公共库相关参数配置-->
+    <common>
+        <!--公共库日志上次接口线上访问地址-->
+        <param name="common_gcl_online_host" value="l.gm.mob.com"/>
+        <!--公共库获取下发配置接口线上访问地址-->
+        <param name="common_gcl_online_host" value="f.gm.mob.com"/>
+    </common>
+</parameter>

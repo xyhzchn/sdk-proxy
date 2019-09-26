@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cn.ceshi.dao.Log2DBtMapper">
+
+    <resultMap id="BaseResultMap" type="com.cn.ceshi.model.Log2DB">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="INTEGER"/>
+        <result column="requestTime" property="requestTime" jdbcType="TIMESTAMP"/>
+        <result column="responseTime" property="responseTime" jdbcType="TIMESTAMP"/>
+        <result column="createAt" property="createAt" jdbcType="TIMESTAMP"/>
+
+        <result column="sendParams" property="sendParams" jdbcType="BLOB"/>
+        <result column="backData" property="backData" jdbcType="BLOB"/>
+        <result column="hostAndURI" property="hostAndURI" jdbcType="BLOB"/>
+
+        <result column="reqOriginParam" property="reqOriginParam" jdbcType="BLOB"/>
+        <result column="respOriginParam" property="respOriginParam" jdbcType="BLOB"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+            id, code, requestTime,
+            responseTime, createAt, sendParams,
+            backData,hostAndURI,reqOriginParam,respOriginParam
+        </sql>
+
+    <insert id="save" parameterType="com.cn.ceshi.model.Log2DB">
+        INSERT INTO `log2db` ( `code`, `requestTime`, `responseTime`,
+        `createAt`, `sendParams`, `backData`, `hostAndURI`,reqOriginParam,respOriginParam)
+        values (#{code,jdbcType=INTEGER}, #{requestTime,jdbcType=TIMESTAMP},
+        #{responseTime,jdbcType=TIMESTAMP}, #{createAt,jdbcType=TIMESTAMP}, #{sendParams,jdbcType=BLOB},
+        #{backData,jdbcType=BLOB},#{hostAndURI,jdbcType=BLOB},
+        #{reqOriginParam,jdbcType=BLOB},#{respOriginParam,jdbcType=BLOB}
+        )
+    </insert>
+
+    <select id="list" parameterType="com.cn.ceshi.model.Log2DB"
+            resultMap="BaseResultMap" useCache="false" flushCache="true">
+        select
+        <include refid="Base_Column_List"/>
+        from `log2db`
+        <where>
+            <if test="hostAndURI != null">
+                and hostAndURI = #{hostAndURI,jdbcType=BLOB}
+            </if>
+
+            <if test="createAt != null">
+                and createAt &gt;= #{createAt,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+        order by createAt desc
+    </select>
+
+
+    <select id="count" resultType="long">
+        select
+        count(1)
+        from `log2db`
+        <where>
+            <if test="hostAndURI != null">
+                and hostAndURI = #{hostAndURI,jdbcType=BLOB}
+            </if>
+
+            <if test="createAt != null">
+                and createAt &gt;= #{createAt,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+</mapper>

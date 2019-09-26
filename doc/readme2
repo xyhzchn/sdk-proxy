@@ -1,0 +1,80 @@
+1.测试需要依赖fidder这个工具
+
+2.各个sdk解密类里的方法2个按照以下格式
+import com.lamfire.json.JSON;
+ /**
+     *  参数解密
+     * @param hostAndURL   域名或者完整的url
+     * @param aseBody      待解密字符串
+     * @param needKey      可能需要的解密参数
+     * @return
+     */
+    JSON inDecode(String hostAndURL, String aseBody, JSON needKey);
+
+    /**
+     *返回值 解密
+     * @param hostAndURL 域名或者完整的url
+     * @param backData   待解密字符串
+     * @param needKey    可能需要的解密参数
+     * @return
+     */
+    String outDecode(String hostAndURL, String backData,JSON needKey);
+
+
+3.各个sdk提供jar包【1个DecodeMapUtil和1个或多个UniformServiceImpl】
+
+  3.1.jar包含以上类【DidiKingUniformServiceImpl】
+  (可包含多个加解密的类) === com.cn.ceshi.util.[sdk区分包名].DidiKingUniformServiceImpl
+  3.2.jar包含工具类【DecodeMapUtil】
+
+  eg：
+public class DecodeMapUtil {
+
+    public static Map<String, String> getDecodeMap() {
+         /*Map<域名,对应着的加解密类完整类名>*/
+        Map<String, String> tempTestMap = new HashMap<String, String>();
+        tempTestMap.put("p.ddking.mob.com", "com.cn.ceshi.util.didiking2.DidiKingUniformServiceImpl");
+        tempTestMap.put("api.ddking.mob.com", "com.cn.ceshi.util.didiking2.DidiKingUniformServiceImpl");
+        return tempTestMap;
+    }
+}
+1.测试需要依赖fidder这个工具
+
+2.各个sdk解密类里的方法2个按照以下格式
+import com.lamfire.json.JSON;
+ /**
+     *  参数解密
+     * @param hostAndURL   域名或者完整的url
+     * @param aseBody      待解密字符串
+     * @param needKey      可能需要的解密参数
+     * @return
+     */
+    JSON inDecode(String hostAndURL, String aseBody, JSON needKey);
+
+    /**
+     *返回值 解密
+     * @param hostAndURL 域名或者完整的url
+     * @param backData   待解密字符串
+     * @param needKey    可能需要的解密参数
+     * @return
+     */
+    String outDecode(String hostAndURL, String backData,JSON needKey);
+
+
+3.各个sdk提供jar包【1个DecodeMapUtil和1个或多个UniformServiceImpl】
+
+  3.1.jar包含以上类【DidiKingUniformServiceImpl】
+  (可包含多个加解密的类) === com.cn.ceshi.util.[sdk区分包名].DidiKingUniformServiceImpl
+  3.2.jar包含工具类【DecodeMapUtil】
+
+  eg：
+public class DecodeMapUtil {
+
+    public static Map<String, String> getDecodeMap() {
+         /*Map<域名,对应着的加解密类完整类名>*/
+        Map<String, String> tempTestMap = new HashMap<String, String>();
+        tempTestMap.put("p.ddking.mob.com", "com.cn.ceshi.util.didiking2.DidiKingUniformServiceImpl");
+        tempTestMap.put("api.ddking.mob.com", "com.cn.ceshi.util.didiking2.DidiKingUniformServiceImpl");
+        return tempTestMap;
+    }
+}
