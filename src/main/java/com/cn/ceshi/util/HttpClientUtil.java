@@ -1,5 +1,7 @@
 package com.cn.ceshi.util;
 
+import com.cn.ceshi.cache.DiskCache;
+import com.cn.ceshi.model.UrlProxyConfig;
 import com.lamfire.json.JSON;
 import com.lamfire.json.deserializer.JSONObjectDeserializer;
 import org.apache.commons.io.IOUtils;
@@ -28,10 +30,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.TextUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.plaf.TextUI;
 
 import org.apache.http.conn.ssl.TrustStrategy;
 
@@ -114,11 +118,19 @@ public class HttpClientUtil {
 
         System.out.println("[postForBody][get][Host origin]: " + host_origin);
         //转发公共库的请求
-        host_origin = replaceHost(host_origin);
+//        host_origin = replaceHost(host_origin);
 
         String uri = request.getRequestURI();
         uri = uri.substring(5);
-        String url = "http://" + host_origin + uri+"?"+aseBody;
+
+        String url = "";
+        String orgin_url = host_origin + uri;
+        String tmp = checkAndReplaceRequestUrl(orgin_url);
+        if (tmp.equals(orgin_url)) {//如果相等，走原来的逻辑
+            url = "http://" + host_origin + uri+"?"+aseBody;
+        } else {//否则，走配置中配置替换的url
+            url = "http://" + tmp + "?" + aseBody;
+        }
 
         System.out.println("[postForBody][get][url]: " + url);
 
@@ -127,19 +139,19 @@ public class HttpClientUtil {
         Enumeration<String> hs = request.getHeaderNames();
         while (hs.hasMoreElements()) {
             String name = hs.nextElement();
-            httpGet.setHeader(name, request.getHeader(name));
-//            switch (name) {
-//                case "transfer-encoding":
-//                    break;
-//                case "host":
-//                    httpGet.setHeader("host", host_origin);
-//                    break;
-//                case "content-length":
-//                    break;
-//                default:
-//                    httpGet.setHeader(name, request.getHeader(name));
-//                    break;
-//            }
+//            httpGet.setHeader(name, request.getHeader(name));
+            switch (name) {
+                case "transfer-encoding":
+                    break;
+                case "host":
+                    httpGet.setHeader("host", host_origin);
+                    break;
+                case "content-length":
+                    break;
+                default:
+                    httpGet.setHeader(name, request.getHeader(name));
+                    break;
+            }
         }
 
         int status = -111;
@@ -184,6 +196,19 @@ public class HttpClientUtil {
         return host_origin;
     }
 
+    //转发公共库请求地址
+    private static String checkAndReplaceRequestUrl(String requestUrl) {
+        UrlProxyConfig config = DiskCache.getUrlProxyConfig(requestUrl);
+        if (config != null && config.isEnable()) {
+            String tmp = config.getDestServerUrl();
+            if (tmp != null && tmp.trim().length() > 0) {
+                System.out.println("wenjun test replace url: " + requestUrl + ", to: " + tmp);
+                return tmp;
+            }
+        }
+        return requestUrl;
+    }
+
     public static JSON postForBody(HttpServletRequest request, String aseBody) {
         if ("GET".equals(request.getMethod())) {
             return get(request, aseBody);
@@ -208,14 +233,22 @@ public class HttpClientUtil {
         System.out.println("[postForBody][Host origin]: " + host_origin);
 
         //转发公共库的请求方法调用
-        host_origin = replaceHost(host_origin);
+//        host_origin = replaceHost(host_origin);
 
-        //唤醒测试环境
+        //添加配置中的url转换
         String url = "";
-        if(host_origin.equals("10.21.141.54")){
-            url = "http://" + host_origin +":8699"+ uri;
-        }else {
-            url = "http://" + host_origin + uri;
+        String orgin_url = host_origin + uri;
+        String tmp = checkAndReplaceRequestUrl(orgin_url);
+        if (tmp.equals(orgin_url)) {//如果相等，走原来的逻辑
+            //唤醒测试环境
+            if(host_origin.equals("10.21.141.54")){
+                url = "http://" + host_origin +":8699"+ uri;
+            }else {
+                url = "http://" + host_origin + uri;
+            }
+        } else {
+            //否则走配置中替换的url
+            url = "http://" + tmp;
         }
 
         System.out.println("[postForBody][HttpPost url]: " + url);

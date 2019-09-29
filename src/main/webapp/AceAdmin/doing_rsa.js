@@ -32,6 +32,7 @@ jQuery(function ($) {
 
 
     $('[data-rel="tooltip"]').tooltip({placement: tooltip_placement});
+
     function tooltip_placement(context, source) {
         var $source = $(source);
         var $parent = $source.closest('table')
@@ -164,7 +165,7 @@ function saveOrUpdateRsa(obj) {
         data: send,
         dataType: "json",
         success: function (msg) {
-            alert(msg.success==1?"修改成功":"失败")
+            alert(msg.success == 1 ? "修改成功" : "失败")
         }
     });
 }
@@ -173,12 +174,14 @@ function addContent(obj) {
     console.log(obj);
 
 }
+
 function long2string(obj) {
     var d = new Date();
     d.setTime(obj);
     var s = d.format('yyyy-MM-dd HH:mm:ss');
     return s;
 }
+
 Date.prototype.format = function (fmt) {
     var o = {
         "M+": this.getMonth() + 1, //月份

@@ -10,7 +10,6 @@ import com.cn.ceshi.util.HttpClientUtil;
 import com.cn.ceshi.util.common.*;
 import com.lamfire.json.JSON;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,6 @@ public class DealServiceImpl2 implements DealService {
     @Autowired
     private ConfigVoMapper cvMapper;
 
-
-
     @Override
     public String doing(HttpServletRequest request) {
         String host_origin = request.getHeader("host_origin");
@@ -56,7 +53,7 @@ public class DealServiceImpl2 implements DealService {
         String uri = request.getRequestURI();
         uri = uri.substring(5);
 
-        String  hostAndURL = host_origin + uri;
+        String hostAndURL = host_origin + uri;
 
         String aseBackData = null;
 
@@ -66,7 +63,7 @@ public class DealServiceImpl2 implements DealService {
             String aseBody = null;
 
             if (configVo != null && configVo.isReqOpen()) {
-                //TODO 加密明文
+                //替换请求体
                 aseBody = RequestEncode.encode(hostAndURL, configVo.getReqParams());
             } else {
                 aseBody = IOUtils.toString(request.getInputStream(), "utf-8");
@@ -86,7 +83,6 @@ public class DealServiceImpl2 implements DealService {
 
             }
             String aseBodyOrigin = aseBody;
-
             if (("api.share.mob.com".equals(host_origin) && uri.indexOf("log4") > -1)
                     || ("l.gm.mob.com".equals(host_origin))
                     || ("c.data.mob.com".equals(host_origin))
@@ -113,26 +109,28 @@ public class DealServiceImpl2 implements DealService {
             }
             JSON desReq = null;
 
-            //动态代码库入口mdc和业务mdc获取接口解密
-            if(uri.contains("duc") || uri.contains("mdc")){
-                desReq = RequestDecodeFnc.decodeDataFnc(host_origin, hostAndURL, heards, aseBody, forDes);
-
-            }else if(uri.contains("dfl")){
-                //动态代码库日志上传解密
-                desReq = RequestDecodeDfl.decodeDataDfl(host_origin, hostAndURL, heards, aseBody, forDes);
-
-            }else if(uri.contains("awt") || uri.contains("apl") || uri.contains("awl")){
-                //唤醒相关下发任务和上传日志解密
+            //添加通用的rsa解密
+            desReq = RequestDecodeRsa.decodeDataRsa(hostAndURL, aseBody, false);
+            if (desReq == null) {
+                //动态代码库入口mdc和业务mdc获取接口解密
+                if (uri.contains("duc") || uri.contains("mdc")) {
+                    desReq = RequestDecodeFnc.decodeDataFnc(host_origin, hostAndURL, heards, aseBody, forDes);
+                } else if (uri.contains("dfl")) {
+                    //动态代码库日志上传解密
+                    desReq = RequestDecodeDfl.decodeDataDfl(host_origin, hostAndURL, heards, aseBody, forDes);
+                } else if (uri.contains("awt") || uri.contains("apl") || uri.contains("awl")) {
+                    //唤醒相关下发任务和上传日志解密
                     desReq = RequestDecodeAw.decodeDataAw(host_origin, hostAndURL, heards, aseBody, forDes);
-
-            }else if(uri.contains("drl")){
-                //动态代码库加载日志解密
+                } else if (uri.contains("drl")) {
+                    //动态代码库加载日志解密
                     desReq = RequestDecodeDrl.decodeDataDrl(host_origin, hostAndURL, heards, aseBody, forDes);
-            }else{
-                //原有公共库解密
+                } else if (uri.contains("jk")) {
+                    desReq = RequestDecodeJk.decodeDataJk(host_origin, hostAndURL, heards, aseBody, forDes);
+                } else {
+                    //原有公共库解密
                     desReq = AllUtil2.inDecode(host_origin, hostAndURL, heards, aseBody, forDes);
                 }
-
+            }
 
 
             //进去的参数处理
@@ -144,18 +142,25 @@ public class DealServiceImpl2 implements DealService {
                 responseTime = new Date();
                 code = 1;
                 String tmp = configVo.getRespParams();
-                //动态代码库响应明文加密
-                if(uri.contains("duc") || uri.contains("mdc")){
-                    aseBackData = RequestEncodeFnc.encodeFnc(tmp);
-                    //唤醒明文加密
-                }else if(uri.contains("dfl")){
-                    aseBackData = RequestEncodeDfl.encodeDfl(tmp);
-                }else if(uri.contains("awt") || uri.contains("apl") || uri.contains("awl")){
+
+                //添加通用的rsa后的aes加密
+                aseBackData = RequestDecodeRsa.encodeByOriginAesKey(hostAndURL, tmp);
+                if (aseBackData == null) {
+                    //动态代码库响应明文加密
+                    if (uri.contains("duc") || uri.contains("mdc")) {
+                        aseBackData = RequestEncodeFnc.encodeFnc(tmp);
+                        //唤醒明文加密
+                    } else if (uri.contains("dfl")) {
+                        aseBackData = RequestEncodeDfl.encodeDfl(tmp);
+                    } else if (uri.contains("awt") || uri.contains("apl") || uri.contains("awl")) {
                         aseBackData = RequestEncodeAw.encodeAw(tmp);
-                }else if(uri.contains("drl")){
-                        aseBackData =  RequestEncodeDrl.encodeDrl(tmp);
-                }else{
+                    } else if (uri.contains("drl")) {
+                        aseBackData = RequestEncodeDrl.encodeDrl(tmp);
+                    } else if (uri.contains("jk")) {
+                        aseBackData = RequestEncodeJk.encodeJk(tmp);
+                    } else {
                         aseBackData = RequestEncode.encode_v1_2_3_4_cconf_resp(hostAndURL, forDes, JSON.fromJSONString(tmp));
+                    }
                 }
 
                 JSON result = new JSON();
@@ -164,7 +169,7 @@ public class DealServiceImpl2 implements DealService {
                 result.put("passDes", 1);
                 pbackData2Db = result.toJSONString();
             } else {
-                 //httpClient
+                //httpClient
                 JSON backDataJSON = HttpClientUtil.postForBody(request, aseBodyOrigin);//from httpclient
 
                 responseTime = new Date();
@@ -174,17 +179,23 @@ public class DealServiceImpl2 implements DealService {
                     aseBackData = backDataJSON.getString("result");
                     if (!StringUtils.isEmpty(aseBackData)) {
                         //b.返回数据入库
-                        JSON outData =null;
-                        if(uri.contains("duc") || uri.contains("mdc")){
-                            outData = RequestDecodeFnc.decodeFnc(aseBackData);
-                        }else if(uri.contains("dfl")){
-                            outData = RequestDecodeDfl.decodeDfl(aseBackData);
-                        }else if(uri.contains("awt") || uri.contains("apl") || uri.contains("awl")){
+                        JSON outData = null;
+                        //添加通用的解密
+                        outData = RequestDecodeRsa.decodeByOriginAesKey(hostAndURL, aseBackData);
+                        if (outData == null) {
+                            if (uri.contains("duc") || uri.contains("mdc")) {
+                                outData = RequestDecodeFnc.decodeFnc(aseBackData);
+                            } else if (uri.contains("dfl")) {
+                                outData = RequestDecodeDfl.decodeDfl(aseBackData);
+                            } else if (uri.contains("awt") || uri.contains("apl") || uri.contains("awl")) {
                                 outData = RequestDecodeAw.decodeAw(aseBackData);
-                        }else if(uri.contains("drl")){
+                            } else if (uri.contains("drl")) {
                                 outData = RequestDecodeDrl.decodeDrl(aseBackData);
-                        }else{
+                            } else if (uri.contains("jk")) {
+                                outData = RequestDecodeJk.decodeJk(aseBackData);
+                            } else {
                                 outData = AllUtil2.outDecode(host_origin, hostAndURL, heards, aseBackData, forDes);
+                            }
                         }
                         pbackData2Db = outData != null ? outData.toJSONString() : null;
 

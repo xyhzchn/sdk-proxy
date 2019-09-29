@@ -514,8 +514,8 @@
                                         <tr>
                                             <th>接口地址</th>
                                             <th>公钥</th>
-                                            <th>模数</th>
                                             <th>私钥</th>
+                                            <th>模数</th>
                                             <th>操作</th>
                                         </tr>
                                         </thead>
@@ -590,8 +590,8 @@
                                             <tr>
                                                 <th>接口地址</th>
                                                 <th>公钥</th>
-                                                <th>模数</th>
                                                 <th>私钥</th>
+                                                <th>模数</th>
                                             </tr>
                                             </thead>
                                             <tbody id="data2">
