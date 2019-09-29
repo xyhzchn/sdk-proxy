@@ -428,6 +428,8 @@
                         </li>
                     </ul>
                 </li>
+
+
             </ul><!-- /.nav-list -->
 
             <div class="sidebar-collapse" id="sidebar-collapse">
@@ -469,18 +471,7 @@
                     </h1>
                 </div><!-- /.page-header -->
                 <div class="row" style="width: 600px;">
-                    <div class='col-sm-6'>
-                        <div class="form-group">
-                            <label>选择日期：</label>
-                            <!--指定 date标记-->
-                            <div class='input-group date' id='datetimepicker1'>
-                                <input type='text' id="createAt" class="form-control"/>
-                                <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class='col-sm-4'>
                         <div class="form-group">
                             <label> 接口地址：</label>
@@ -500,6 +491,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class='col-sm-2'>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <!--指定 date标记-->
+                            <div class='input-group'>
+                                <input type="button" onclick="showAdd()" value="增加"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
@@ -512,17 +512,11 @@
                                            class="table table-striped table-bordered table-hover">
                                         <thead>
                                         <tr>
-                                            <th style="width: 200px;">接口地址</th>
-                                            <th>代理状态</th>
-                                            <th>请求解密状态</th>
-                                            <th>字段状态</th>
-                                            <th>请求参数明文 </th>
-                                            <th>请求参数密文 </th>
-                                            <th>响应数据明文 </th>
-                                            <th>响应数据密文 </th>
-                                            <th> <i class="icon-time bigger-110 hidden-480"></i>请求时间</th>
-                                            <th> <i class="icon-time bigger-110 hidden-480"></i>响应时间</th>
-                                            <th> <i class="icon-time bigger-110 hidden-480"></i>响应时间</th>
+                                            <th>接口地址</th>
+                                            <th>公钥</th>
+                                            <th>模数</th>
+                                            <th>私钥</th>
+                                            <th>操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="data">
@@ -576,6 +570,61 @@
                                 </div><!-- /.modal-content -->
                             </div><!-- /.modal-dialog -->
                         </div><!-- PAGE CONTENT ENDS -->
+
+                        <div id="modal-table-x2" class="modal fade" tabindex="-1" >
+                            <div class="modal-dialog">
+                                <div class="modal-content" style="width: 1050px;">
+                                    <div class="modal-header no-padding">
+                                        <div class="table-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                <span class="white">&times;</span>
+                                            </button>
+                                            详细数据
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-body no-padding" style="height: 200px;">
+                                        <table
+                                               class="table table-striped table-bordered table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>接口地址</th>
+                                                <th>公钥</th>
+                                                <th>模数</th>
+                                                <th>私钥</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="data2">
+                                            <tr>
+                                                <td class="hidden-480 none-td"><textarea name="url"></textarea></td>
+                                                <td class="hidden-480"><textarea name="publicKey"></textarea> </td>
+                                                <td class="hidden-480"><textarea name="secretKey"></textarea></td>
+                                                <td class="hidden-480"><textarea name="modules"></textarea></td>
+                                                <th class="hidden-480" onclick="saveOrUpdateRsa(this.parentNode)">
+                                                    <button>确定修改</button>
+                                                </th>
+                                            </tr>
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                    <div class="modal-footer no-margin-top">
+                                        <button class="btn btn-sm btn-danger pull-left" data-dismiss="modal">
+                                            <i class="icon-remove"></i>
+                                            Close
+                                        </button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- PAGE CONTENT ENDS -->
+                        <h4 class="pink" style="display: none">
+                            <i class="icon-hand-right icon-animated-hand-pointer blue"></i>
+                            <a id="show_button2" href="#modal-table-x2" role="button" class="green" data-toggle="modal">
+                                Table Inside a Modal
+                                Box </a>
+                        </h4>
+
                     </div><!-- /.col -->
 
                 </div><!-- /.row -->
@@ -619,9 +668,10 @@
 <script src="<%=basePath%>AceAdmin/date/js/moment-with-locales.min.js"></script>
 <script src="<%=basePath%>AceAdmin/date/js/bootstrap-datetimepicker.min.js"></script>
 <script>
-    var url ="<%=basePath%>/admin/data";
+    var url = "<%=basePath%>/admin/config/query_rsa";
+    var url_update = "<%=basePath%>/admin/config/update_rsa";
 </script>
-<script src="<%=basePath%>AceAdmin/doing.js"></script>
+<script src="<%=basePath%>AceAdmin/doing_rsa.js"></script>
 
 
 </body>

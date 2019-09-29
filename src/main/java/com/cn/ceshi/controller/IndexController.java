@@ -1,8 +1,10 @@
 package com.cn.ceshi.controller;
 
-import com.cn.ceshi.dao.ConfigVoMapper;
+import com.cn.ceshi.cache.DiskCache;
 import com.cn.ceshi.model.ConfigVo;
 import com.cn.ceshi.model.Log2DB;
+import com.cn.ceshi.model.RsaInfoConfig;
+import com.cn.ceshi.model.UrlProxyConfig;
 import com.cn.ceshi.service.DealService;
 import com.cn.ceshi.service.LogDataService;
 import com.lamfire.json.JSON;
@@ -10,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,9 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wangly on 2017/8/30.
@@ -47,6 +46,16 @@ public class IndexController {
     @RequestMapping(value = "/admin/page/config")
     public String page_config(HttpServletRequest request) {
         return "config";
+    }
+
+    @RequestMapping(value = "/admin/page/config_rsa")
+    public String page_config_rsa(HttpServletRequest request) {
+        return "config_rsa";
+    }
+
+    @RequestMapping(value = "/admin/page/config_proxy")
+    public String page_config_proxy(HttpServletRequest request) {
+        return "config_proxy";
     }
 
     @ResponseBody
@@ -171,7 +180,169 @@ public class IndexController {
 
         map.put("success", back);
         return map;
+    }
 
+    @ResponseBody
+    @RequestMapping(value = "/admin/config/query_rsa")
+    public JSON config_rsa(HttpServletRequest request) {
+        String pageNoStr = request.getParameter("pageno");
+        String hostAndURI = request.getParameter("hostAndURI");
+
+        int pageno = 1;
+        int pagesize = 10;
+        if (!StringUtils.isEmpty(pageNoStr)) {
+            try {
+                int pNo = Integer.valueOf(pageNoStr);
+                if (pNo > 0) {
+                    pageno = pNo;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ConfigVo configVo = new ConfigVo();
+        //
+        if (!StringUtils.isEmpty(hostAndURI)) {
+            configVo.setUrl(hostAndURI);
+        }
+
+        HashMap<String, RsaInfoConfig> cacheMap = DiskCache.getAllRsaInfo();
+        List<RsaInfoConfig> list = new ArrayList<>();
+        for (Map.Entry<String, RsaInfoConfig> item : cacheMap.entrySet()) {
+            list.add(item.getValue());
+        }
+        Collections.sort(list);
+        long count = list.size();
+
+        List<RsaInfoConfig> newList = new ArrayList<>();
+        if (pagesize >= count) {
+            newList = list;
+        } else {
+            for (int i = 0; i < pagesize; i ++) {
+                int index = (pageno -1) * pagesize + i;
+                if (index < count) {
+                    newList.add(list.get(index));
+                }
+            }
+        }
+        JSON map = new JSON();
+        map.put("data", newList);
+        map.put("pageno", pageno);
+        map.put("pagesize", pagesize);
+        map.put("total", count > 0 ? (count - 1) / pagesize + 1 : 0);
+        request.setAttribute("result", map);
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/admin/config/update_rsa")
+    public JSON configUpdateRsa(HttpServletRequest request) {
+        String url = request.getParameter("url");
+        String publicKey = request.getParameter("publicKey");
+        String secretKey = request.getParameter("secretKey");
+        String modules = request.getParameter("modules");
+
+        url = url == null ? "" : url.trim();
+        publicKey = publicKey == null ? "" : publicKey.trim();
+        secretKey = secretKey == null ? "" : secretKey.trim();
+        modules = modules == null ? "" : modules.trim();
+        JSON map = new JSON();
+        if ("".equals(url) || "".equals(publicKey) || "".equals(secretKey) || "".equals(modules)) {
+            map.put("success", -1);
+            map.put("msg", "params is errror");
+            return map;
+        }
+
+        RsaInfoConfig info = new RsaInfoConfig();
+        info.setUrl(url);
+        info.setModules(modules);
+        info.setPublicKey(publicKey);
+        info.setSecretKey(secretKey);
+        info.setCreateTime(System.currentTimeMillis());
+
+        boolean result = DiskCache.saveRsaInfo(url, info);
+        map.put("success", result ? 1 : 0);
+        return map;
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/admin/config/query_proxy")
+    public JSON config_proxy(HttpServletRequest request) {
+        String pageNoStr = request.getParameter("pageno");
+        String hostAndURI = request.getParameter("hostAndURI");
+
+        int pageno = 1;
+        int pagesize = 10;
+        if (!StringUtils.isEmpty(pageNoStr)) {
+            try {
+                int pNo = Integer.valueOf(pageNoStr);
+                if (pNo > 0) {
+                    pageno = pNo;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        HashMap<String, UrlProxyConfig> cacheMap = DiskCache.getAllUrlProxyConfig();
+        List<UrlProxyConfig> list = new ArrayList<>();
+        for (Map.Entry<String, UrlProxyConfig> entry : cacheMap.entrySet()) {
+            list.add(entry.getValue());
+        }
+
+        Collections.sort(list);
+        long count = list.size();
+
+        List<UrlProxyConfig> newList = new ArrayList<>();
+        if (pagesize >= count) {
+            newList = list;
+        } else {
+            for (int i = 0; i < pagesize; i ++) {
+                int index = (pageno -1) * pagesize + i;
+                if (index < count) {
+                    newList.add(list.get(index));
+                }
+            }
+        }
+
+        JSON map = new JSON();
+        map.put("data", newList);
+        map.put("pageno", pageno);
+        map.put("pagesize", pagesize);
+        map.put("total", count > 0 ? (count - 1) / pagesize + 1 : 0);
+        request.setAttribute("result", map);
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/admin/config/update_proxy")
+    public JSON configUpdateProxy(HttpServletRequest request) {
+        String clientReqUrl = request.getParameter("clientReqUrl");
+        String destServerUrl = request.getParameter("destServerUrl");
+        String tmp = request.getParameter("enable");
+
+        clientReqUrl = clientReqUrl == null ? "" : clientReqUrl.trim();
+        destServerUrl = destServerUrl == null ? "" : destServerUrl.trim();
+        boolean enable = tmp == null ? false : Boolean.valueOf(tmp.trim());
+
+        JSON map = new JSON();
+        if ("".equals(clientReqUrl) || "".equals(destServerUrl)) {
+            map.put("success", -1);
+            map.put("msg", "params is errror");
+            return map;
+        }
+
+        UrlProxyConfig config = new UrlProxyConfig();
+        config.setClientReqUrl(clientReqUrl);
+        config.setDestServerUrl(destServerUrl);
+        config.setEnable(enable);
+        config.setCreateTime(System.currentTimeMillis());
+
+        boolean result = DiskCache.saveUrlProxyConfig(clientReqUrl, config);
+        map.put("success", result ? 1 : 0);
+        return map;
     }
 
     @ResponseBody
