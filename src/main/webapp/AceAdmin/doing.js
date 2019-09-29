@@ -85,13 +85,54 @@ function paging(page) {
                 }
             }
             element.bootstrapPaginator(options);
-
-
         }
     });
 
 }
 
+function clearHistory(obj) {
+    if(!confirm("你确定要清空数据么？")) {
+        return;
+    }
+    var hostAndURI = $("#hostAndURI").val();
+    var createAt = $("#createAt").val();
+    if(hostAndURI){
+        hostAndURI=hostAndURI.trim()
+    }
+    var sendParams = {
+        "hostAndURI": hostAndURI,
+        "createAt": createAt,
+    }
+    $.ajax({
+        type: "GET",
+        url: url_clear,
+        data: sendParams,
+        dataType: "json",
+        success: function (msg) {
+            var pageno = msg.pageno;
+            var pagesize = msg.pagesize;
+            var total = msg.total;
+            $("#data").html("");
+            if (total == 0) {
+                $('#pageUl').html("");
+                alert(msg.success==1?"清除成功":"清除失败")
+                return;
+            }
+            loadData(msg);
+            var element = $('#pageUl');//对应下面ul的IDx
+            var options = {
+                bootstrapMajorVersion: 3,
+                currentPage: pageno,//当前页面
+                numberOfPages: 6,//一页显示几个按钮（在ul里面生成5个li）
+                totalPages: total, //总页数
+                onPageClicked: function (event, originalEvent, typePage, currentPage) {
+                    paging(currentPage);
+                }
+            }
+            element.bootstrapPaginator(options);
+        }
+    });
+}
 
 function loadData(jsonArray) {
     var html = '';

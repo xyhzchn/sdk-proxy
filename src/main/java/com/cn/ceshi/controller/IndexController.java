@@ -85,12 +85,12 @@ public class IndexController {
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        if (!StringUtils.isEmpty(createAt)) {
+        try {
+            log2DB.setCreateAt(simpleDateFormat.parse(createAt));
+        } catch (Throwable e) {
             try {
-                log2DB.setCreateAt(simpleDateFormat.parse(createAt));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                log2DB.setCreateAt(simpleDateFormat.parse(simpleDateFormat.format(new Date())));
+            } catch (Throwable t) {}
         }
 
         List<Log2DB> list = logDataService.list(log2DB, pageno, pagesize);
@@ -100,6 +100,37 @@ public class IndexController {
         map.put("pageno", pageno);
         map.put("pagesize", pagesize);
         map.put("total", count > 0 ? (count - 1) / pagesize + 1 : 0);
+        request.setAttribute("result", map);
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/admin/data_clear")
+    public JSON dataClear(HttpServletRequest request) {
+        String hostAndURI = request.getParameter("hostAndURI");
+        String createAt = request.getParameter("createAt");
+        Log2DB log2DB = new Log2DB();
+        if (!StringUtils.isEmpty(hostAndURI)) {
+            log2DB.setHostAndURI(hostAndURI);
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        if (!StringUtils.isEmpty(createAt)) {
+            try {
+                log2DB.setCreateAt(simpleDateFormat.parse(createAt));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        long clearSize = logDataService.clear(log2DB);
+        System.out.println("wenjun test clearSize: " + clearSize);
+        JSON map = new JSON();
+        map.put("data", clearSize);
+        map.put("pageno", 0);
+        map.put("pagesize", 10);
+        map.put("total", 0);
+        map.put("success", 1);
         request.setAttribute("result", map);
         return map;
     }

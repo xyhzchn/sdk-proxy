@@ -500,6 +500,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class='col-sm-12'>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <!--指定 date标记-->
+                            <div class='input-group'>
+                                <input type="button" onclick="clearHistory()" value="清除记录"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
@@ -620,6 +629,7 @@
 <script src="<%=basePath%>AceAdmin/date/js/bootstrap-datetimepicker.min.js"></script>
 <script>
     var url ="<%=basePath%>/admin/data";
+    var url_clear ="<%=basePath%>/admin/data_clear";
 </script>
 <script src="<%=basePath%>AceAdmin/doing.js"></script>
 

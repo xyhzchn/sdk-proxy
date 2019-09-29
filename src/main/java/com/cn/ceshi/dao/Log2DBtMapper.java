@@ -16,4 +16,6 @@ public interface Log2DBtMapper {
     List<Log2DB> list(Log2DB log2DB);
 
     long count(Log2DB log2DB);
+
+    int clear(Log2DB log2DB);
 }

@@ -30,6 +30,11 @@ public class LogDataServiceImpl implements LogDataService {
     }
 
     @Override
+    public int clear(Log2DB log2DB) {
+        return log2DBtMapper.clear(log2DB);
+    }
+
+    @Override
     public long count(Log2DB log2DB) {
         return log2DBtMapper.count(log2DB);
     }

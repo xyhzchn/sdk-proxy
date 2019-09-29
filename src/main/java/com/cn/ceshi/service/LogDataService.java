@@ -13,6 +13,8 @@ public interface LogDataService {
 
     List<Log2DB> list(Log2DB log2DB, int pageno, int pagesize);
 
+    int clear(Log2DB log2DB);
+
     long count(Log2DB log2DB);
 
     List<ConfigVo> listConf(ConfigVo configVo, int pageno, int pagesize);
