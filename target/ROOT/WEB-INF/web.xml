@@ -97,8 +97,8 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      classpath:data.xml
-      classpath:service.xml
+        classpath:data.xml
+        classpath:service.xml
     </param-value>
   </context-param>
 

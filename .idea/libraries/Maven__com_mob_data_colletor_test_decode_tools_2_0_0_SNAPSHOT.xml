@@ -8,7 +8,6 @@
     </JAVADOC>
     <SOURCES>
       <root url="jar://$MAVEN_REPOSITORY$/com/mob/data/colletor/test_decode_tools/2.0.0-SNAPSHOT/test_decode_tools-2.0.0-SNAPSHOT-sources.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/com/mob/data/colletor/test_decode_tools/2.0.0-SNAPSHOT/test_decode_tools-2.0.0-SNAPSHOT.jar!/" />
     </SOURCES>
   </library>
 </component>

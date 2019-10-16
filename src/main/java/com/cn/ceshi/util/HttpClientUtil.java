@@ -62,9 +62,9 @@ public class HttpClientUtil {
     private static PoolingHttpClientConnectionManager poolConnManager;
     private static final int maxTotalPool = 200;
     private static final int maxConPerRoute = 20;
-    private static final int socketTimeout = 2000;
-    private static final int connectionRequestTimeout = 3000;
-    private static final int connectTimeout = 1000;
+    private static final int socketTimeout = 30000;
+    private static final int connectionRequestTimeout = 10000;
+    private static final int connectTimeout = 10000;
 
     static {
         try {

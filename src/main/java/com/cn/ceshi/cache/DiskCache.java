@@ -94,6 +94,7 @@ public class DiskCache {
             if (cacheName == null) {
                 return;
             }
+
             map.put(cacheName, obj);
             try {
                 delayQueue.put(delay);

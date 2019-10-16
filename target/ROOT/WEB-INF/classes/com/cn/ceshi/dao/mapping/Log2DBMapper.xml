@@ -67,4 +67,18 @@
         </where>
     </select>
 
+    <delete id="clear" parameterType="com.cn.ceshi.model.Log2DB">
+        delete
+        from `log2db`
+        <where>
+            <if test="hostAndURI != null">
+                and hostAndURI = #{hostAndURI,jdbcType=BLOB}
+            </if>
+
+            <if test="createAt != null">
+                and createAt &gt;= #{createAt,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
 </mapper>

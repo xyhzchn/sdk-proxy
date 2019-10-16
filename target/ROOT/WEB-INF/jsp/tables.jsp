@@ -402,18 +402,32 @@
                     </a>
 
                     <ul class="submenu" style="display: block;">
-                      <li>
+                        <li>
+                            <a href="/admin/page">
+                                <i class="icon-double-angle-right"></i>
+                                查询日志列表
+                            </a>
+                        </li>
+                        <li>
                             <a href="/admin/page/config">
                                 <i class="icon-double-angle-right"></i>
                                 配置自定义参数
                             </a>
                         </li>
-
-
+                        <li>
+                            <a href="/admin/page/config_rsa">
+                                <i class="icon-double-angle-right"></i>
+                                配置接口RSA密钥
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/admin/page/config_proxy">
+                                <i class="icon-double-angle-right"></i>
+                                客户端接口转发设置
+                            </a>
+                        </li>
                     </ul>
                 </li>
-
-
             </ul><!-- /.nav-list -->
 
             <div class="sidebar-collapse" id="sidebar-collapse">
@@ -483,6 +497,15 @@
                             <!--指定 date标记-->
                             <div class='input-group'>
                                 <input type="button" onclick="paging(1)" value="查询"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-sm-12'>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <!--指定 date标记-->
+                            <div class='input-group'>
+                                <input type="button" onclick="clearHistory()" value="清除记录"/>
                             </div>
                         </div>
                     </div>
@@ -606,6 +629,7 @@
 <script src="<%=basePath%>AceAdmin/date/js/bootstrap-datetimepicker.min.js"></script>
 <script>
     var url ="<%=basePath%>/admin/data";
+    var url_clear ="<%=basePath%>/admin/data_clear";
 </script>
 <script src="<%=basePath%>AceAdmin/doing.js"></script>
 

@@ -515,7 +515,7 @@
                                             <th>接口地址</th>
                                             <th>目标服务器接口地址</th>
                                             <th>是否启用</th>
-                                            <th>操作</th>
+                                            <th colspan="2">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="data">

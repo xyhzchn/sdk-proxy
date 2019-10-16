@@ -100,14 +100,14 @@ function loadData(jsonArray) {
         var clientReqUrl = obj.clientReqUrl;
         var destServerUrl = obj.destServerUrl;
         var enable = obj.enable;
-        var trs = '<tr>  '
-            + ' <td class="hidden-480" ><textarea name="clientReqUrl">' + clientReqUrl + '</textarea></td> '
-            + ' <td class="hidden-480"><textarea name="destServerUrl">' + destServerUrl + '</textarea></td>'
-            + ' <td class="hidden-480" ><textarea name="enable">' + enable + '</textarea></td> '
-            + ' <th class="hidden-480" onclick="saveOrUpdateProxy(this.parentNode)" ><button>' + "确定修改" + '</button></th> '
-            + ' </tr> ';
+            var trs = '<tr>  '
+                + ' <td class="hidden-480" ><textarea name="clientReqUrl">' + clientReqUrl + '</textarea></td> '
+                + ' <td class="hidden-480"><textarea name="destServerUrl">' + destServerUrl + '</textarea></td>'
+                + ' <td class="hidden-480" ><textarea name="enable">' + enable + '</textarea></td> '
+                + ' <th class="hidden-480" onclick="saveOrUpdateProxy(this.parentNode)" ><button>' + "确定修改" + '</button></th> '
+                + ' </tr> ';
 
-        html += trs;
+            html += trs;
     }
     $("#data").html(html);
 }
@@ -117,6 +117,10 @@ function show(obj) {
     $("#show_button").click();
     $("#show_data").text($(obj).text());
 }
+
+// function deleteProxy(obj) {
+//     $(obj).remove();
+// }
 
 function showAdd(obj) {
     //console.log(obj);

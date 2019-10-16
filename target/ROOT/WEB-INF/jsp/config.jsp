@@ -403,13 +403,29 @@
 
                     <ul class="submenu" style="display: block;">
                         <li>
+                            <a href="/admin/page">
+                                <i class="icon-double-angle-right"></i>
+                                查询日志列表
+                            </a>
+                        </li>
+                        <li>
                             <a href="/admin/page/config">
                                 <i class="icon-double-angle-right"></i>
                                 配置自定义参数
                             </a>
                         </li>
-
-
+                        <li>
+                            <a href="/admin/page/config_rsa">
+                                <i class="icon-double-angle-right"></i>
+                                配置接口RSA密钥
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/admin/page/config_proxy">
+                                <i class="icon-double-angle-right"></i>
+                                客户端接口转发设置
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -658,7 +674,6 @@
 <script>
     var url = "<%=basePath%>/admin/config/query";
     var url_update = "<%=basePath%>/admin/config/update";
-
 </script>
 <script src="<%=basePath%>AceAdmin/doing2.js"></script>
 
