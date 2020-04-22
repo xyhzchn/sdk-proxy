@@ -219,6 +219,7 @@ public class DealServiceImpl2 implements DealService {
             log2DB.setResponseTime(responseTime);
             log2DB.setHostAndURI(hostAndURL);
             log2DB.setSendParams(desReq.toJSONString());
+            System.out.println(desReq.toJSONString());
             log2DB.setBackData(pbackData2Db);
             log2DBtMapper.save(log2DB);
         } catch (IOException e) {

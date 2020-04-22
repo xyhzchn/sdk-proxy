@@ -39,7 +39,6 @@
   </repositories>
 
 
-
   <profiles>
     <profile>
       <id>beta</id>
